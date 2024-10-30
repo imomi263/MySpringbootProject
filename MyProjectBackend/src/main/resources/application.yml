@@ -1,1 +1,7 @@
-spring.application.name=myprojectbackend
+spring:
+  application:
+    name: myprojectbackend
+  security:
+    jwt:
+      key: abcdefg
+      expire: 7

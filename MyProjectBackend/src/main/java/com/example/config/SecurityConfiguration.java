@@ -1,6 +1,8 @@
 package com.example.config;
 
 import com.example.entity.RestBean;
+import com.example.filter.JwtAuthorizeFilter;
+import com.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -14,8 +16,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
@@ -23,6 +28,12 @@ import java.io.IOException;
 @Configuration
 public class SecurityConfiguration {
 
+    @Resource
+    JwtUtils jwtUtils;
+
+
+    @Resource
+    JwtAuthorizeFilter jwtAuthorizeFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,17 +53,26 @@ public class SecurityConfiguration {
                                 .logoutSuccessHandler(this::onLogoutSuccess)
 
                 )
+                .exceptionHandling(conf->conf
+                                .authenticationEntryPoint(this::onUnauthorized)
+
+                        )
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf->conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthorizeFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
 
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth ) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication auth ) throws IOException, ServletException {
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.success().asJsonString());
+        User user=(User)auth.getPrincipal();
+        String token=jwtUtils.createJwt(user,1,"red");
+        response.getWriter().write(RestBean.success(token).asJsonString());
 
 
     }
@@ -68,6 +88,27 @@ public class SecurityConfiguration {
 
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) throws IOException, ServletException {
         response.getWriter().write("logout success");
+        response.setContentType("application/json;charset=UTF-8");
+        String authorization = request.getHeader("Authorization");
+        if(jwtUtils.invalidateJwt(authorization)) {
+            response.getWriter().write(RestBean.success().asJsonString());
+        }else{
+            response.getWriter().write(RestBean.failure(401,"logout fail").asJsonString());
+        }
     }
 
+
+    public void onUnauthorized(HttpServletRequest request,
+                               HttpServletResponse response,
+                               AuthenticationException auth )throws IOException, ServletException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(RestBean.failure(401,auth.getMessage()).asJsonString());
+    }
+
+    public void onAccessDeny(HttpServletRequest request,
+                             HttpServletResponse response,
+                             AuthenticationException auth) throws IOException, ServletException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(RestBean.failure(403,auth.getMessage()).asJsonString());
+    }
 }

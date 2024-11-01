@@ -47,7 +47,7 @@ public class JwtUtils {
                 .sign(algorithm);
     }
 
-    private Date expireTime(){
+    public Date expireTime(){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 24*expire);
         return calendar.getTime();
@@ -73,10 +73,14 @@ public class JwtUtils {
     }
 
     private String convertToken(String token){
-        if (token == null || !token.startsWith("Bearer ")) {
+        if (token == null) {
             return null;
         }
-        return token.substring(7);
+        if(token.startsWith("Bearer ")){
+            return token.substring(7);
+        }
+        else return token;
+
     }
 
     public UserDetails toUser(DecodedJWT jwt) {
@@ -106,6 +110,7 @@ public class JwtUtils {
     private boolean isInvalidToken(String uid){
         return Boolean.TRUE.equals(stringRedisTemplate.hasKey(Const.JWT_BALCK_LIST + uid));
     }
+
     public boolean invalidateJwt(String headerToken){
         String token=this.convertToken(headerToken);
         if(token==null){

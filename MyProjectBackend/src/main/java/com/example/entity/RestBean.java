@@ -15,11 +15,9 @@ public record RestBean<T>(int code, T data, String msg) {
 
 
     public static<T> RestBean<T> failure(int code,String msg){
-        return new RestBean<T>(404,null,msg);
+        return new RestBean<T>(code,null,msg);
 
     }
-
-
 
     public String asJsonString(){
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);

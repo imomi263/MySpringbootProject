@@ -1,0 +1,3 @@
+net start mysql(imomi 123456)
+net start RabbitMQ(guest guest)
+net start Redis

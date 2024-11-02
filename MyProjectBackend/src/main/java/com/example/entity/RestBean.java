@@ -21,6 +21,5 @@ public record RestBean<T>(int code, T data, String msg) {
 
     public String asJsonString(){
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
-
     }
 }

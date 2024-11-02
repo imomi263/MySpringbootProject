@@ -2,7 +2,9 @@ package com.example.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.entity.RestBean;
+import com.example.entity.vo.request.ConfirmResetVO;
 import com.example.entity.vo.request.EmailRegisterVO;
+import com.example.entity.vo.request.EmailResetVO;
 import com.example.service.AccountService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +50,16 @@ public class AuthorizeController {
         }else{
             return RestBean.failure(400,message);
         }
+    }
+
+    @PostMapping("/reset-confirm")
+    public RestBean<Void> resetConfirm(@RequestBody @Valid ConfirmResetVO vo){
+        return this.messageHandle(() -> accountService.resetConfirm(vo));
+    }
+
+    @PostMapping("/reset-password")
+    public RestBean<Void> resetConfirm(@RequestBody @Valid EmailResetVO vo){
+        return this.messageHandle(() -> accountService.resetEmailAccountPassword(vo));
     }
 }
 

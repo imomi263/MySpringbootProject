@@ -3,7 +3,9 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Account;
+import com.example.entity.vo.request.ConfirmResetVO;
 import com.example.entity.vo.request.EmailRegisterVO;
+import com.example.entity.vo.request.EmailResetVO;
 import com.example.mapper.AccountMapper;
 import com.example.service.AccountService;
 import com.example.utils.Const;
@@ -109,6 +111,33 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     }
 
+    @Override
+    public String resetConfirm(ConfirmResetVO vo) {
+        String email=vo.getEmail();
+        String code=stringRedisTemplate.opsForValue().get(Const.VERIFY_EMAIL_DATA+email);
+        if(code==null){
+            return "please get code first";
+        }
+        if(!code.equals(vo.getCode())){
+            return "code input false";
+        }
+        return null;
+    }
+
+    @Override
+    public String resetEmailAccountPassword(EmailResetVO vo) {
+        String verify=this.resetConfirm(vo);
+        if(verify!=null){
+            return verify;
+        }
+
+        String password=passwordEncoder.encode(vo.getPassword());
+        boolean update=this.update().eq("email",vo.getEmail()).set("password",password).update();
+        if(update){
+            stringRedisTemplate.delete(Const.VERIFY_EMAIL_DATA+vo.getEmail());
+        }
+        return null;
+    }
 
     private boolean existAccountByEmail(String email) {
         return this.baseMapper.exists(Wrappers.<Account>query().eq("email", email));

@@ -8,11 +8,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="myprojectbackend" />
-        <module name="springbootSession" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="MyProjectBackend" target="17" />
+      <module name="springbootSession" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

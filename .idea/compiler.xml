@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="myprojectbackend" />
+        <module name="springbootSession" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -18,6 +19,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="MyProjectBackend" options="-parameters" />
       <module name="myprojectbackend" options="-parameters" />
+      <module name="springbootSession" options="-parameters" />
     </option>
   </component>
 </project>

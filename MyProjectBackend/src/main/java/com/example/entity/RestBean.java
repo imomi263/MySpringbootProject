@@ -13,6 +13,9 @@ public record RestBean<T>(int code, T data, String msg) {
         return success(null);
     }
 
+    public static <T> RestBean<T> forbidden(String message){
+        return failure(403, message);
+    }
 
     public static<T> RestBean<T> failure(int code,String msg){
         return new RestBean<T>(code,null,msg);

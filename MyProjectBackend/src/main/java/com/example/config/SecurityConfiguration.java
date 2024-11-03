@@ -65,6 +65,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf->conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .addFilterBefore(jwtAuthorizeFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -9,6 +9,7 @@
       <list>
         <option value="$PROJECT_DIR$/MyProjectBackend/pom.xml" />
         <option value="$PROJECT_DIR$/myprojectbackend/pom.xml" />
+        <option value="$PROJECT_DIR$/springbootSession/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
